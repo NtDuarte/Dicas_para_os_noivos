@@ -35,7 +35,7 @@ Data: ${agora.toLocaleString('pt-BR')}
 `;
 
         await put(nomeArquivo, conteudo, {
-            access: 'private',
+            access: 'public',
             addRandomSuffix: false,
             contentType: 'text/plain; charset=utf-8'
         });
