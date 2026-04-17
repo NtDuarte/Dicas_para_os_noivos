@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dicas para os Noivos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --serenity-blue: #92A8D1;
+            --soft-white: #F7F9FB;
+            --text-color: #555;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--soft-white);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: white;
+            width: 100%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5rem;
+            color: var(--serenity-blue);
+            margin: 0;
+        }
+
+        .carousel-container {
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            margin: 30px 0;
+            overflow: hidden;
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .form-section {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            width: 90%;
+            max-width: 500px;
+            margin-bottom: 50px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        textarea {
+            height: 120px;
+            resize: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--serenity-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #7A92C2;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Dicas para os Noivos</h1>
+        <p>Sua mensagem é muito importante para nós!</p>
+    </header>
+
+    <div class="carousel-container">
+        <div class="slides" id="slide-track">
+            <img src="ensaio-248.jpg.jpeg" class="slide" alt="Ensaio Noivos 248">
+            <img src="ensaio-263.jpg.jpeg" class="slide" alt="Ensaio Noivos 263">
+            <img src="ensaio-267.jpg.jpeg" class="slide" alt="Ensaio Noivos 267">
+            <img src="ensaio-275.jpg.jpeg" class="slide" alt="Ensaio Noivos 275">
+            <img src="ensaio-313.jpg.jpeg" class="slide" alt="Ensaio Noivos 313">
+            <img src="ensaio-320.jpg.jpeg" class="slide" alt="Ensaio Noivos 320">
+            <img src="ensaio-334.jpg.jpeg" class="slide" alt="Ensaio Noivos 334">
+            <img src="ensaio-393.jpg.jpeg" class="slide" alt="Ensaio Noivos 393">
+            <img src="ensaio-395.jpg.jpeg" class="slide" alt="Ensaio Noivos 395">
+            <img src="ensaio-397.jpg.jpeg" class="slide" alt="Ensaio Noivos 397">
+            <img src="ensaio-439.jpg.jpeg" class="slide" alt="Ensaio Noivos 439">
+            <img src="ensaio-386.jpg.jpeg" class="slide" alt="Ensaio Noivos 386">
+            <img src="ensaio-428.jpg.jpeg" class="slide" alt="Ensaio Noivos 428">
+            <img src="ensaio-232.jpg.jpeg" class="slide" alt="Ensaio Noivos 232">
+            <img src="ensaio-426.jpg.jpeg" class="slide" alt="Ensaio Noivos 426">
+        </div>
+    </div>
+
+    <section class="form-section">
+        <form id="dica-form">
+            <div class="form-group">
+                <label for="nome">Seu Nome</label>
+                <input type="text" id="nome" placeholder="Ex: João Silva" required>
+            </div>
+            <div class="form-group">
+                <label for="mensagem">Sua Dica</label>
+                <textarea id="mensagem" placeholder="Deixe aqui seu conselho ou mensagem carinhosa..." required></textarea>
+            </div>
+            <button type="submit">Enviar Dica</button>
+        </form>
+    </section>
+
+    <script>
+    const track = document.getElementById('slide-track');
+    let index = 0;
+    const totalSlides = document.querySelectorAll('.slide').length;
+
+    function moveCarousel() {
+        index++;
+        if (index >= totalSlides) index = 0;
+        track.style.transform = `translateX(-${index * 100}%)`;
+    }
+
+    setInterval(moveCarousel, 4000);
+
+    document.getElementById('dica-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const nome = document.getElementById('nome').value.trim();
+        const mensagem = document.getElementById('mensagem').value.trim();
+
+        if (!nome || !mensagem) {
+            alert('Preencha seu nome e sua dica antes de enviar.');
+            return;
+        }
+
+        try {
+            const resposta = await fetch('/api/salvar-dica', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nome, mensagem })
+            });
+
+            const resultado = await resposta.json();
+
+            if (resposta.ok) {
+                alert(`Obrigado, ${nome}! Sua dica foi enviada com sucesso.`);
+                this.reset();
+            } else {
+                alert(resultado.erro || 'Erro ao salvar a dica.');
+            }
+        } catch (erro) {
+            console.error(erro);
+            alert('Erro ao enviar a dica.');
+        }
+    });
+</script>
+
+</body>
+</html>
