@@ -1,8 +1,9 @@
 {
-  "name": "dicas-noivos",
+  "name": "dicas-para-os-noivos",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "dependencies": {
-    "@vercel/blob": "^1.1.1"
+    "@vercel/blob": "^1.0.0"
   }
 }
