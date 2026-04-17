@@ -1,30 +1,37 @@
-const { put } = require('@vercel/blob');
+import { put } from '@vercel/blob';
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
     if (req.method !== 'POST') {
-        return res.status(405).json({ erro: 'Método não permitido' });
+        return res.status(405).json({ erro: 'Método não permitido.' });
     }
 
     try {
         const { nome, mensagem } = req.body || {};
 
         if (!nome || !mensagem) {
-            return res.status(400).json({ erro: 'Nome e mensagem são obrigatórios.' });
+            return res.status(400).json({
+                erro: 'Nome e mensagem são obrigatórios.'
+            });
         }
 
-        const nomeSeguro = nome
+        const nomeSeguro = String(nome)
+            .trim()
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-zA-Z0-9]/g, '_');
+            .replace(/[^a-zA-Z0-9]/g, '_')
+            .replace(/_+/g, '_')
+            .replace(/^_|_$/g, '');
 
-        const data = new Date();
-        const dataArquivo = data.toISOString().replace(/[:.]/g, '-');
+        const mensagemLimpa = String(mensagem).trim();
 
-        const nomeArquivo = `Dicas_Noivos/${nomeSeguro}_${dataArquivo}.txt`;
+        const agora = new Date();
+        const dataArquivo = agora.toISOString().replace(/[:.]/g, '-');
+
+        const nomeArquivo = `Dicas_Noivos/${nomeSeguro || 'sem_nome'}_${dataArquivo}.txt`;
 
         const conteudo = `Nome: ${nome}
-Dica: ${mensagem}
-Data: ${data.toLocaleString('pt-BR')}
+Dica: ${mensagemLimpa}
+Data: ${agora.toLocaleString('pt-BR')}
 `;
 
         const blob = await put(nomeArquivo, conteudo, {
@@ -34,11 +41,15 @@ Data: ${data.toLocaleString('pt-BR')}
         });
 
         return res.status(200).json({
-            mensagem: 'Dica salva com sucesso!',
+            sucesso: true,
+            mensagem: 'Dica salva com sucesso.',
             arquivo: blob.url
         });
     } catch (erro) {
         console.error('Erro ao salvar dica:', erro);
-        return res.status(500).json({ erro: 'Erro interno ao salvar a dica.' });
+
+        return res.status(500).json({
+            erro: erro.message || 'Erro interno ao salvar a dica.'
+        });
     }
-};
+}
