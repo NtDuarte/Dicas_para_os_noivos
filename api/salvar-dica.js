@@ -34,16 +34,15 @@ Dica: ${mensagemLimpa}
 Data: ${agora.toLocaleString('pt-BR')}
 `;
 
-        const blob = await put(nomeArquivo, conteudo, {
-            access: 'public',
+        await put(nomeArquivo, conteudo, {
+            access: 'private',
             addRandomSuffix: false,
             contentType: 'text/plain; charset=utf-8'
         });
 
         return res.status(200).json({
             sucesso: true,
-            mensagem: 'Dica salva com sucesso.',
-            arquivo: blob.url
+            mensagem: 'Dica salva com sucesso.'
         });
     } catch (erro) {
         console.error('Erro ao salvar dica:', erro);
