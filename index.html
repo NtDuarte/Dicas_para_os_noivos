@@ -183,60 +183,67 @@
     </section>
 
     <script>
-        const track = document.getElementById('slide-track');
-        const slides = document.querySelectorAll('.slide');
-        let index = 0;
+    const track = document.getElementById('slide-track');
+    const slides = document.querySelectorAll('.slide');
+    let index = 0;
 
-        function moveCarousel() {
-            if (slides.length === 0) return;
-            index++;
-            if (index >= slides.length) index = 0;
-            track.style.transform = `translateX(-${index * 100}%)`;
+    function moveCarousel() {
+        if (slides.length === 0) return;
+        index++;
+        if (index >= slides.length) index = 0;
+        track.style.transform = `translateX(-${index * 100}%)`;
+    }
+
+    setInterval(moveCarousel, 4000);
+
+    document.getElementById('dica-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const nome = document.getElementById('nome').value.trim();
+        const mensagem = document.getElementById('mensagem').value.trim();
+        const botao = document.getElementById('btn-enviar');
+
+        if (!nome || !mensagem) {
+            alert('Preencha seu nome e sua dica antes de enviar.');
+            return;
         }
 
-        setInterval(moveCarousel, 4000);
+        botao.disabled = true;
+        botao.textContent = 'Enviando...';
 
-        document.getElementById('dica-form').addEventListener('submit', async function (e) {
-            e.preventDefault();
+        try {
+            const resposta = await fetch('/api/salvar-dica', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nome, mensagem })
+            });
 
-            const nome = document.getElementById('nome').value.trim();
-            const mensagem = document.getElementById('mensagem').value.trim();
-            const botao = document.getElementById('btn-enviar');
-
-            if (!nome || !mensagem) {
-                alert('Preencha seu nome e sua dica antes de enviar.');
-                return;
-            }
-
-            botao.disabled = true;
-            botao.textContent = 'Enviando...';
+            const textoResposta = await resposta.text();
+            let resultado;
 
             try {
-                const resposta = await fetch('/api/salvar-dica', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ nome, mensagem })
-                });
-
-                const resultado = await resposta.json();
-
-                if (!resposta.ok) {
-                    throw new Error(resultado.erro || 'Erro ao enviar a dica.');
-                }
-
-                alert(`Obrigado, ${nome}! Sua dica foi enviada com sucesso.`);
-                this.reset();
-            } catch (erro) {
-                console.error('Erro ao enviar dica:', erro);
-                alert(erro.message || 'Erro ao enviar a dica.');
-            } finally {
-                botao.disabled = false;
-                botao.textContent = 'Enviar Dica';
+                resultado = JSON.parse(textoResposta);
+            } catch {
+                throw new Error(`Resposta inesperada do servidor: ${textoResposta}`);
             }
-        });
-    </script>
+
+            if (!resposta.ok) {
+                throw new Error(resultado.erro || 'Erro ao enviar a dica.');
+            }
+
+            alert(`Obrigado, ${nome}! Sua dica foi enviada com sucesso.`);
+            this.reset();
+        } catch (erro) {
+            console.error('Erro ao enviar dica:', erro);
+            alert(erro.message || 'Erro ao enviar a dica.');
+        } finally {
+            botao.disabled = false;
+            botao.textContent = 'Enviar Dica';
+        }
+    });
+</script>
 
 </body>
 </html>
